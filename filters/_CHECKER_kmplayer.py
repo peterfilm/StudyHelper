@@ -4,6 +4,9 @@ import os
 
 
 def checker_kmplayer(mw):
+    '''
+    Проверяет есть путь к kmplayer, есть ли ссылка на папку и есть ли в этой папке видеофайлы
+    '''
     if not conf['KMPLAYER_PATH']:
         kmplayer_set(mw, 0)
     elif not conf['LAST_PATH']:

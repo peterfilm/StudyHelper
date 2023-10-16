@@ -1,38 +1,36 @@
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
-from modules.api import conf, load_key_to_api
-import os
-from PyQt5.QtWidgets import QComboBox
 import pygetwindow as gw
-from PyQt5.QtCore import Qt
-
+from modules.api import conf
 
 class DopSelect:
     '''
-    Выбор всех вкладок
+    Выбор всех вкладок для заметок
     '''
 
     def __init__(self, main_window):
         self.mw = main_window
         self.get_tabs()
-        self.mw.comboBox_doptab.view().viewport().mousePressEvent = self.handle_combo_box_click
-        self.mw.comboBox_doptab.activated.connect(self.handle_combo_box_activation)
+        self.mw.comboBox_doptab.activated.connect(self.activate_dop)
+        self.mw.comboBox_doptab.clicked.connect(self.on_combo_clicked)
 
     def get_tabs(self):
-        a = [i for i in gw.getAllTitles() if i != '']
+        self.mw.comboBox_doptab.clear()
+        self.mw.comboBox_doptab.addItem('-')
+        a = [i for i in gw.getAllTitles() if i not in ('', conf['NAME'], 'Параметры', 'Проводник', 'Program Manager')]
         for i in range(len(a)):
             self.mw.comboBox_doptab.addItem(a[i])
-            
-    def handle_combo_box_click(self, event):
-        # Slot function called when the combobox is clicked
-        if event.button() == Qt.LeftButton:
-            print("Combo box clicked before item selection")
-        super(QComboBox, self.mw.comboBox_doptab).mousePressEvent(event)
+
+    def activate_dop(self, index):
+        window = self.mw.comboBox_doptab.itemText(index)
+        if window == '-':
+            self.mw.dop_hWnd = None
+        else:
+            self.mw.dop_hWnd = gw.getWindowsWithTitle(window)[0]._hWnd
         
-    def handle_combo_box_activation(self, index):
-        # Slot function called when the combobox item is activated (clicked)
-        selected_item = self.mw.comboBox_doptab.currentText()
-        print(f"Selected item: {selected_item}")
-        # Add your code here to refresh data based on the selected item
-            
-    def clicked(self):
-        print('asd')
+    def on_combo_clicked(self):
+        selected = self.mw.comboBox_doptab.currentText()
+        self.get_tabs()
+        try:
+            self.mw.comboBox_doptab.setCurrentText(selected)
+        except Exception as e:
+            print("can't set")
+        

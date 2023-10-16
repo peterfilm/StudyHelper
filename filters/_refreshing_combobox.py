@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QComboBox
 from PyQt5.QtCore import pyqtSignal
 
-class ClickableLabel(QLabel):
+class RefreshingComboBox(QComboBox):
     '''
-    Кликабельный QLabel
+    Кликабельный QCombobox - чтобы ловить сишнал клика
     '''
     clicked = pyqtSignal()
 

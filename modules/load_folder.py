@@ -1,10 +1,6 @@
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtCore import QUrl
 from functools import partial
 import os
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget, QFileDialog, QMessageBox
-from PyQt5.QtGui import QDesktopServices, QIcon
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from filters._CHECKER_kmplayer import checker_kmplayer
 from filters._open_folder import check_open_folder
 from modules.api import conf, load_key_to_api
@@ -12,7 +8,7 @@ from modules.api import conf, load_key_to_api
 
 class LoadFolder:
     '''
-    Кнопка выбора папки
+    Кнопка выбора папки с видеофайлами
     '''
 
     def __init__(self, main_window):

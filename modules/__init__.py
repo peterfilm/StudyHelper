@@ -5,4 +5,5 @@ from modules.select_path import SelectPath
 from modules.kmplayer_chrome import KMPlayerToChrome
 from modules.google import GoogleSelect
 from modules.all_tabs import DopSelect
+from modules.change_lang import ChangeLang
 from modules.api import conf

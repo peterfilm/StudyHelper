@@ -1,13 +1,10 @@
-from PyQt5.QtWidgets import QFileDialog
-from modules.api import conf, load_key_to_api
-import os
 from filters._kmplayer_to_google import kmplayer_to_google
 from filters._CHECKER_kmplayer import checker_kmplayer
 
 
 class KMPlayerToChrome:
     '''
-    Выбираем между Kmplayer и Chrome
+    Выбираем между Kmplayer и Chrome - radio buttons
     '''
 
     def __init__(self, main_window):
@@ -21,3 +18,4 @@ class KMPlayerToChrome:
         radio_btn = self.mw.sender()
         if radio_btn.isChecked():
             kmplayer_to_google(self.mw, radio_btn.text())
+            self.mw.player = radio_btn.text()

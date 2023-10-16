@@ -1,4 +1,8 @@
 def kmplayer_to_google(mw, value):
+    '''
+    Переключатель между Kmplayer и Chrome 
+    - если галочка включена у кмплеера - то прячет все окна для хрома
+    '''
     if value == 'KMPlayer':
         mw.label_kmplayer.show()
         mw.label_kmplayer_path.show()

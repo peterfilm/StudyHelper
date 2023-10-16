@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from modules.api import conf, load_key_to_api
 import os
+from filters._CHECKER_kmplayer import checker_kmplayer
 
 
 class SelectPath:
@@ -19,8 +20,10 @@ class SelectPath:
             conf['KMPLAYER_PATH'] = os.path.normpath(kmplayer_path[0])
             load_key_to_api('KMPLAYER_PATH',
                             os.path.normpath(kmplayer_path[0]))
+            checker_kmplayer(self.mw)
         else:
             QMessageBox.warning(self.mw, 'Ошибка',
                                 'Некорректный путь к KMPlayer')
             conf['KMPLAYER_PATH'] = ''
             load_key_to_api('KMPLAYER_PATH', '')
+            checker_kmplayer(self.mw)

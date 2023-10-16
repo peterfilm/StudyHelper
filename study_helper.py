@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget, QLabel
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
 import keyboard
@@ -9,6 +9,7 @@ import os
 from design.design import Ui_Helper
 from modules import *
 from filters._kmplayer_to_google import kmplayer_to_google
+import ctypes
 
 old_path = conf['NAME']
 
@@ -23,12 +24,16 @@ def activate_window_by_title(window_title):
 
 
 class MyWindow(QMainWindow, Ui_Helper):
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.files = []
         self.last_active = None
         self.pushButton_open.setEnabled(False)
+        self.dop_hWnd = None
+        self.google_hWnd = None
+        self.lang = None
 
         icon = QIcon(os.path.join("img", "icon.ico"))
         self.setWindowIcon(icon)
@@ -41,7 +46,10 @@ class MyWindow(QMainWindow, Ui_Helper):
         self.google = GoogleSelect(self)
         self.kmplayer_chrome = KMPlayerToChrome(self)
         self.dop = DopSelect(self)
-        kmplayer_to_google(self, 'kmplayer')
+        self.change_lang = ChangeLang(self)
+
+        self.player = 'KMPlayer'
+        kmplayer_to_google(self, 'KMPlayer')
 
         # грузим qss в файл
         try:
@@ -64,20 +72,29 @@ class MyWindow(QMainWindow, Ui_Helper):
         keyboard.press(76)
 
     def dop_tab_active(self, event):
-        window = self.comboBox_doptab.currentText()
-        if gw.getActiveWindowTitle() != window:
-            self.last_active = gw.getActiveWindowTitle()
-            dop = gw.getWindowsWithTitle(window)[0]
-            dop.activate()
-        else:
-            window = gw.getWindowsWithTitle(self.last_active)[0]
-            window.activate()
+        if event.scan_code == 82 and event.is_keypad:
+            try:
+                window = self.comboBox_doptab.currentText()
+                if gw.getActiveWindowTitle() != gw._pygetwindow_win.Win32Window(hWnd=self.dop_hWnd).title:
+                    self.last_active = gw.getActiveWindowTitle()
+                    dop = gw._pygetwindow_win.Win32Window(hWnd=self.dop_hWnd)
+                    dop.activate()
+                    if not dop.isMaximized:
+                        dop.restore()
+                else:
+                    dop = gw._pygetwindow_win.Win32Window(hWnd=self.dop_hWnd)
+                    window = gw.getWindowsWithTitle(self.last_active)[0]
+                    window.activate()
+                    dop.minimize()
+            except Exception as e:
+                print(e)
 
     def simulate_left_arrow(self, event):
         if self.files:
             if event.scan_code == 75 and event.is_keypad:
-                self.activate_window('left')
-                keyboard.press('right')
+                if gw.getActiveWindowTitle() != conf['NAME']:
+                    self.activate_window('left')
+                    keyboard.press('right')
 
     def simulate_space(self, event):
         if self.files:
@@ -87,20 +104,31 @@ class MyWindow(QMainWindow, Ui_Helper):
     def simulate_right_arrow(self, event):
         if self.files:
             if event.scan_code == 77 and event.is_keypad:
-                self.activate_window('right')
-                keyboard.press('left')
+                if gw.getActiveWindowTitle() != conf['NAME']:
+                    self.activate_window('right')
+                    keyboard.press('left')
 
     def activate_window(self, button):
         try:
+            lang = self.lang_now()
             old_path = gw.getActiveWindow().title
             new_path = None
-            for i in self.files:
-                if len(gw.getWindowsWithTitle(i)):
-                    new_path = gw.getWindowsWithTitle(i)[0]
+
+            # Выбираем что будет играть плеер или гугл хром
+            if self.player == 'KMPlayer':
+                for i in self.files:
+                    if len(gw.getWindowsWithTitle(i)):
+                        new_path = gw.getWindowsWithTitle(i)[0]
+            elif self.player == 'Google Chrome':
+                new_path = gw._pygetwindow_win.Win32Window(
+                    hWnd=self.google_hWnd)
+
+            # настраиваем переключение между окнами
             if new_path:
                 old_active = gw.getActiveWindow().title
                 new_path.activate()
-                new_path.restore()
+                if not new_path.isMaximized:
+                    new_path.restore()
                 keyboard.send(button)
                 time.sleep(0.01)
                 if new_path.title == old_active and not self.checkBox.checkState():
@@ -110,8 +138,19 @@ class MyWindow(QMainWindow, Ui_Helper):
                     a = gw.getWindowsWithTitle(old_path)[0]
                     a.activate()
 
+            # меняем язык, если есть
+            if self.comboBox_language.currentText() != '-':
+                self.change_lang.switch_input_language(lang)
+
         except:
             pass
+
+    def lang_now(self):
+        user32 = ctypes.WinDLL('user32', use_last_error=True)
+        handle = user32.GetForegroundWindow()
+        threadid = user32.GetWindowThreadProcessId(handle, 0)
+        layout_id = user32.GetKeyboardLayout(threadid)
+        return layout_id & 0xFFFF
 
 
 def active_first_window():

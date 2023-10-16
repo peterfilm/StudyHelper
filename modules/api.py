@@ -4,7 +4,7 @@ def load_api_keys():
     '''
     Достаем файлы из настроек
     '''
-    with open('config.json') as file:
+    with open('config.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
         return data
 

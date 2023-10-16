@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from modules.api import conf
 from filters._ClicableLabel import ClickableLabel
+from filters._refreshing_combobox import RefreshingComboBox
 
 class Ui_Helper(object):
     def setupUi(self, MainWindow):
@@ -110,7 +111,7 @@ class Ui_Helper(object):
         self.label_choose_chrome.setObjectName("label_choose_chrome")
         self.label_choose_chrome.hide()
         self.verticalLayout.addWidget(self.label_choose_chrome)
-        self.comboBox_chrome = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_chrome = RefreshingComboBox(self.layoutWidget)
         self.comboBox_chrome.setMinimumSize(QtCore.QSize(351, 31))
         self.comboBox_chrome.setObjectName("comboBox_chrome")
         self.verticalLayout.addWidget(self.comboBox_chrome)
@@ -129,7 +130,7 @@ class Ui_Helper(object):
         self.label_doptab.setFont(font)
         self.label_doptab.setObjectName("label_doptab")
         self.verticalLayout_2.addWidget(self.label_doptab)
-        self.comboBox_doptab = QtWidgets.QComboBox(self.layoutWidget)
+        self.comboBox_doptab = RefreshingComboBox(self.layoutWidget)
         self.comboBox_doptab.setMinimumSize(QtCore.QSize(351, 31))
         self.comboBox_doptab.setObjectName("comboBox_doptab")
         self.verticalLayout_2.addWidget(self.comboBox_doptab)

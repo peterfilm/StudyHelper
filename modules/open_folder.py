@@ -6,7 +6,7 @@ from filters._open_folder import check_open_folder
 
 class OpenFolder:
     '''
-    Кнопка открытия папки
+    Кнопка открытия папки в проводнике
     '''
 
     def __init__(self, main_window):
