@@ -72,6 +72,7 @@ class MyWindow(QMainWindow, Ui_Helper):
         keyboard.press(76)
 
     def dop_tab_active(self, event):
+        lang = self.lang_now()
         if event.scan_code == 82 and event.is_keypad:
             try:
                 window = self.comboBox_doptab.currentText()
@@ -86,6 +87,9 @@ class MyWindow(QMainWindow, Ui_Helper):
                     window = gw.getWindowsWithTitle(self.last_active)[0]
                     window.activate()
                     dop.minimize()
+                # меняем язык, если есть
+                if self.comboBox_language.currentText() != '-':
+                    self.change_lang.switch_input_language(lang)
             except Exception as e:
                 print(e)
 
@@ -132,8 +136,9 @@ class MyWindow(QMainWindow, Ui_Helper):
                 keyboard.send(button)
                 time.sleep(0.01)
                 if new_path.title == old_active and not self.checkBox.checkState():
-                    if button == 'space':
-                        new_path.minimize()
+                    if conf['MINIMIZE']:
+                        if button == 'space':
+                            new_path.minimize()
                 if self.checkBox.checkState():
                     a = gw.getWindowsWithTitle(old_path)[0]
                     a.activate()
