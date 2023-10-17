@@ -65,10 +65,12 @@ class MyWindow(QMainWindow, Ui_Helper):
 
         self.setGeometry(100, 100, 400, 200)
         self.setWindowTitle(conf['NAME'])
-        keyboard.on_press_key('num 4', self.simulate_left_arrow)
-        keyboard.on_press_key('num 5', self.simulate_space)
-        keyboard.on_press_key('num 6', self.simulate_right_arrow)
-        keyboard.on_press_key('num 0', self.dop_tab_active)
+
+        keyboard.on_press_key('num 4', self.simulate_left_arrow, suppress=True)
+        keyboard.on_press_key('num 5', self.simulate_space, suppress=True)
+        keyboard.on_press_key(
+            'num 6', self.simulate_right_arrow, suppress=True)
+        keyboard.on_press_key('num 0', self.dop_tab_active, suppress=True)
         keyboard.press(76)
 
     def dop_tab_active(self, event):
@@ -92,25 +94,37 @@ class MyWindow(QMainWindow, Ui_Helper):
                     self.change_lang.switch_input_language(lang)
             except Exception as e:
                 print(e)
+        elif event.scan_code == 82 and not event.is_keypad:
+            keyboard.press_and_release('insert')
+        elif event.scan_code == 11 and not event.is_keypad:
+            keyboard.press_and_release('0')
 
     def simulate_left_arrow(self, event):
         if self.files:
             if event.scan_code == 75 and event.is_keypad:
                 if gw.getActiveWindowTitle() != conf['NAME']:
                     self.activate_window('left')
-                    keyboard.press('right')
+            elif event.scan_code == 75 and not event.is_keypad:
+                keyboard.press_and_release('left')
+            elif event.scan_code == 5 and not event.is_keypad:
+                keyboard.press_and_release('4')
 
     def simulate_space(self, event):
         if self.files:
             if event.scan_code == 76 and event.is_keypad:
                 self.activate_window('space')
+            elif event.scan_code == 6 and not event.is_keypad:
+                keyboard.press_and_release('5')
 
     def simulate_right_arrow(self, event):
         if self.files:
             if event.scan_code == 77 and event.is_keypad:
                 if gw.getActiveWindowTitle() != conf['NAME']:
                     self.activate_window('right')
-                    keyboard.press('left')
+            elif event.scan_code == 77 and not event.is_keypad:
+                keyboard.press_and_release('right')
+            elif event.scan_code == 7 and not event.is_keypad:
+                keyboard.press_and_release('6')
 
     def activate_window(self, button):
         try:
