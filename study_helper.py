@@ -34,6 +34,7 @@ class MyWindow(QMainWindow, Ui_Helper):
         self.dop_hWnd = None
         self.google_hWnd = None
         self.lang = None
+        self.begin_lang = self.lang_now()
 
         icon = QIcon(os.path.join("img", "icon.ico"))
         self.setWindowIcon(icon)
@@ -117,6 +118,8 @@ class MyWindow(QMainWindow, Ui_Helper):
                 keyboard.press_and_release('5')
 
     def simulate_right_arrow(self, event):
+        if event.scan_code == 39 and self.begin_lang == 1049:
+            keyboard.press_and_release('ж')
         if self.files:
             if event.scan_code == 77 and event.is_keypad:
                 if gw.getActiveWindowTitle() != conf['NAME']:
