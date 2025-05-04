@@ -17,8 +17,8 @@ def load_key_to_api(name, value):
     '''
     data = load_api_keys()
     data[name] = value
-    with open('config.json', "w") as file:
-        json.dump(data, file, indent=2)
+    with open('config.json', "w", encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False,  indent=2)
 
 
 conf = load_api_keys()

@@ -1,7 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDesktopWidget
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QTimer
 import keyboard
 import pygetwindow as gw
 import time
@@ -9,6 +8,7 @@ import os
 from design.design import Ui_Helper
 from modules import *
 from filters._kmplayer_to_google import kmplayer_to_google
+
 import ctypes
 
 old_path = conf['NAME']
@@ -101,7 +101,7 @@ class MyWindow(QMainWindow, Ui_Helper):
             keyboard.press_and_release('0')
 
     def simulate_left_arrow(self, event):
-        if self.files:
+        try:
             if event.scan_code == 75 and event.is_keypad:
                 if gw.getActiveWindowTitle() != conf['NAME']:
                     self.activate_window('left')
@@ -109,18 +109,22 @@ class MyWindow(QMainWindow, Ui_Helper):
                 keyboard.press_and_release('left')
             elif event.scan_code == 5 and not event.is_keypad:
                 keyboard.press_and_release('4')
+        except:
+            pass
 
     def simulate_space(self, event):
-        if self.files:
+        try:
             if event.scan_code == 76 and event.is_keypad:
                 self.activate_window('space')
             elif event.scan_code == 6 and not event.is_keypad:
                 keyboard.press_and_release('5')
+        except:
+            pass
 
     def simulate_right_arrow(self, event):
-        if event.scan_code == 39 and self.begin_lang == 1049:
-            keyboard.press_and_release('ж')
-        if self.files:
+        try:
+            if event.scan_code == 39 and self.begin_lang == 1049:
+                keyboard.press_and_release('ж')
             if event.scan_code == 77 and event.is_keypad:
                 if gw.getActiveWindowTitle() != conf['NAME']:
                     self.activate_window('right')
@@ -128,6 +132,8 @@ class MyWindow(QMainWindow, Ui_Helper):
                 keyboard.press_and_release('right')
             elif event.scan_code == 7 and not event.is_keypad:
                 keyboard.press_and_release('6')
+        except:
+            pass
 
     def activate_window(self, button):
         try:
@@ -143,7 +149,6 @@ class MyWindow(QMainWindow, Ui_Helper):
             elif self.player == 'Google Chrome':
                 new_path = gw._pygetwindow_win.Win32Window(
                     hWnd=self.google_hWnd)
-
             # настраиваем переключение между окнами
             if new_path:
                 old_active = gw.getActiveWindow().title
@@ -183,15 +188,12 @@ def active_first_window():
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    QTimer.singleShot(1, active_first_window)
     screen = QDesktopWidget().screenGeometry()
     window = MyWindow()
 
-    # Calculate the position to center the window
     x = (screen.width() - window.width()) // 2
     y = (screen.height() - window.height()) // 2
 
-    # Move the window to the calculated position
     window.move(x, y)
 
     window.show()
